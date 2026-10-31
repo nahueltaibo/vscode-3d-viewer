@@ -45,6 +45,18 @@
           },
           {
             "filenamePattern": "*.{amf,AMF}"
+          },
+          {
+            "filenamePattern": "*.{step,STEP,stp,STP}"
+          },
+          {
+            "filenamePattern": "*.{iges,IGES,igs,IGS}"
+          },
+          {
+            "filenamePattern": "*.{brep,BREP,brp,BRP}"
+          },
+          {
+            "filenamePattern": "*.{fcstd,FCStd,FCSTD}"
           }
         ]
       },
