@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Adds a **Turn** button that turns the view 180° around the up axis.
+- Adds the `o3dv.defaultView` setting. Set it to `back` for models whose front faces +Y.
+
 ## 0.2.0
 
 - Opens STEP, IGES, BREP and FCStd files with a bundled Open CASCADE build. They work offline.

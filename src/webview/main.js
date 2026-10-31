@@ -73,6 +73,20 @@ function applyUpAxis(animate) {
   upButton.textContent = `${state.upAxis} up`;
 }
 
+// Rotates the eye 180° around the up axis through the view center.
+function turnAround() {
+  const camera = viewer.GetCamera().Clone();
+  const { eye, center, up } = camera;
+  const len = Math.hypot(up.x, up.y, up.z);
+  const u = { x: up.x / len, y: up.y / len, z: up.z / len };
+  const d = { x: eye.x - center.x, y: eye.y - center.y, z: eye.z - center.z };
+  const along = 2 * (d.x * u.x + d.y * u.y + d.z * u.z);
+  eye.x = center.x + along * u.x - d.x;
+  eye.y = center.y + along * u.y - d.y;
+  eye.z = center.z + along * u.z - d.z;
+  viewer.SetCamera(camera);
+}
+
 function fit(animate) {
   const sphere = viewer.GetBoundingSphere(() => true);
   if (sphere) {
@@ -152,6 +166,9 @@ function load(msg) {
       } else {
         applyUpAxis(false);
         fit(false);
+        if (msg.defaultView === 'back') {
+          turnAround();
+        }
       }
       state.hasModel = true;
       const missing = importResult.missingFiles ?? [];
@@ -170,6 +187,7 @@ function load(msg) {
 }
 
 document.getElementById('fit').addEventListener('click', () => fit(true));
+document.getElementById('turn').addEventListener('click', turnAround);
 upButton.addEventListener('click', () => {
   state.upAxis = state.upAxis === 'Y' ? 'Z' : 'Y';
   applyUpAxis(true);

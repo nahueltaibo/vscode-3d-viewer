@@ -53,6 +53,7 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
           files,
           keepCamera,
           upAxis: resolveUpAxis(config.get<string>('upAxis', 'auto'), uri),
+          defaultView: config.get<string>('defaultView', 'front'),
           showEdges: config.get<boolean>('showEdges', false),
           edgeThreshold: config.get<number>('edgeThreshold', 30),
         });
@@ -131,6 +132,7 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
 <div id="viewer"></div>
 <div id="toolbar">
   <button id="fit" title="Fit model to view">Fit</button>
+  <button id="turn" title="Turn the view 180° around the up axis">Turn</button>
   <button id="up" title="Toggle up axis">Y up</button>
   <button id="edges" title="Toggle edges" aria-pressed="false">Edges</button>
   <button id="proj" title="Toggle perspective / orthographic">Persp</button>
