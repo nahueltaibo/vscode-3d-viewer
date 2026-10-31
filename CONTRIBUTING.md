@@ -16,6 +16,7 @@ Press F5 to launch an Extension Development Host with the extension loaded.
 - `src/extension.ts` registers the custom editors, reads model files and watches them for changes.
 - `src/webview/main.js` runs the Online3DViewer engine inside the webview.
 - `src/webview/viewcube.js` draws the view cube and turns clicks on it into camera directions.
+- `src/webview/parts.js` builds the part tree from the model's nodes and drives per-part visibility and highlighting.
 - `src/webview/occt.js` loads the bundled Open CASCADE build for STEP, IGES, BREP and FCStd. `esbuild.mjs` points the engine at it instead of the CDN.
 
 ## Install your build

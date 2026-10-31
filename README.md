@@ -38,6 +38,7 @@ OBJ, OFF, glTF, DAE, WRL and BIM are text formats, so they still open in the tex
 - **View cube:** the cube in the top-right corner turns with the model. Click a face, edge or corner to jump to that view, such as FRONT, TOP or the front-right-top corner.
 - **Fit:** the button above the cube frames the whole model.
 - **Settings menu:** the gear in the top-left corner switches the up axis between Y and Z, turns on orthographic projection and draws feature edges.
+- **Parts:** for assemblies, the list button next to the gear opens the part tree. Untick a part to hide it, or hover its row and click **Isolate** to show only that part. Point at a row to highlight the part, or click a part in the view to find its row. Hidden parts stay hidden when the file reloads.
 
 ## What else it does
 
