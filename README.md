@@ -1,5 +1,7 @@
 # 3D Model Viewer for VS Code
 
+[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/nahueltaibo.o3dv-viewer?label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) [![Open VSX](https://img.shields.io/open-vsx/v/nahueltaibo/o3dv-viewer?label=Open%20VSX)](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer) [![Release](https://github.com/nahueltaibo/vscode-3d-viewer/actions/workflows/release.yml/badge.svg)](https://github.com/nahueltaibo/vscode-3d-viewer/actions/workflows/release.yml)
+
 Open STEP, STL, 3MF and other 3D models in a VS Code tab instead of switching to a separate app. Keep the tab open while your CAD script rebuilds the file, and the view refreshes without losing your camera.
 
 Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Online3DViewer). Everything runs offline inside VS Code.
