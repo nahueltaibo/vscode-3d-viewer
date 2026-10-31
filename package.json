@@ -5,7 +5,15 @@
   "version": "0.2.0",
   "publisher": "nahueltaibo",
   "license": "MIT",
-  "private": true,
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e293b",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/nahueltaibo/vscode-3d-viewer#readme",
+  "bugs": {
+    "url": "https://github.com/nahueltaibo/vscode-3d-viewer/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nahueltaibo/vscode-3d-viewer"
@@ -131,5 +139,22 @@
     "esbuild": "^0.28.2",
     "occt-import-js": "^0.0.22",
     "typescript": "^7.0.2"
-  }
+  },
+  "keywords": [
+    "3d",
+    "viewer",
+    "step",
+    "stp",
+    "iges",
+    "stl",
+    "3mf",
+    "obj",
+    "gltf",
+    "glb",
+    "ply",
+    "fbx",
+    "cad",
+    "mesh",
+    "3d printing"
+  ]
 }
