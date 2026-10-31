@@ -1,124 +1,66 @@
 # 3D Model Viewer for VS Code
 
-[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/nahueltaibo.o3dv-viewer?label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) [![Open VSX](https://img.shields.io/open-vsx/v/nahueltaibo/o3dv-viewer?label=Open%20VSX)](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer) [![Release](https://github.com/nahueltaibo/vscode-3d-viewer/actions/workflows/release.yml/badge.svg)](https://github.com/nahueltaibo/vscode-3d-viewer/actions/workflows/release.yml)
+[![VS Marketplace](https://vsmarketplacebadges.dev/version/nahueltaibo.o3dv-viewer.svg?label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) [![Open VSX](https://img.shields.io/open-vsx/v/nahueltaibo/o3dv-viewer?label=Open%20VSX)](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer)
 
 Open STEP, STL, 3MF and other 3D models in a VS Code tab instead of switching to a separate app. Keep the tab open while your CAD script rebuilds the file, and the view refreshes without losing your camera.
 
-Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Online3DViewer). Everything runs offline inside VS Code.
+Everything runs offline inside VS Code. Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Online3DViewer).
 
-![A 3MF assembly open in the viewer](docs/screenshot.png)
-
-## Prerequisites
-
-- **VS Code 1.90 or newer.** Desktop on Windows, macOS or Linux. Remote SSH, WSL and Dev Containers work too, because the extension reads files through VS Code.
-- **A GPU with WebGL 2 support.** Any machine from the last decade qualifies.
-- **Building from source only:** [Node.js](https://nodejs.org/) 20 or newer (npm comes with it) and git.
+![A 3MF assembly open in the viewer, with the view cube in the top-right corner](docs/screenshot.png)
 
 ## Install
 
-**From the extension store.** This is the easiest way. Open the Extensions view, search for **3D Model Viewer (Online3DViewer)** and click **Install**. You can also install it from the command line:
+Open the Extensions view, search for **3D Model Viewer (Online3DViewer)** and click **Install**. Or from a terminal:
 
 ```sh
 code --install-extension nahueltaibo.o3dv-viewer
 ```
 
-It's listed on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) and on [Open VSX](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer) for VSCodium, Cursor and other VS Code forks.
+It's on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) and on [Open VSX](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer) for VSCodium, Cursor and other VS Code forks.
 
-**From a release.** Use this when the store isn't available, such as on an offline machine.
+You'll need VS Code 1.90 or newer and a GPU with WebGL 2, which any machine from the last decade has. Remote SSH, WSL and Dev Containers work too.
 
-1. Download the latest `.vsix` from the [Releases page](https://github.com/nahueltaibo/vscode-3d-viewer/releases/latest).
-2. Install it, either from a terminal:
+## Open a model
 
-   ```sh
-   code --install-extension o3dv-viewer-0.4.0.vsix
-   ```
+Click a model in the Explorer. These formats open in the viewer straight away:
 
-   or in VS Code: open the Extensions view, click the `…` menu and pick **Install from VSIX…**.
-3. Run **Developer: Reload Window**. Tabs that were already open keep their old editor until you reopen them.
+STEP, IGES, BREP, FCStd, STL, 3MF, GLB, 3DS, FBX, PLY and AMF.
 
-**From source.**
-
-```sh
-git clone https://github.com/nahueltaibo/vscode-3d-viewer.git
-cd vscode-3d-viewer
-npm install
-npm run package
-code --install-extension o3dv-viewer-0.4.0.vsix
-```
-
-## Use it
-
-Open a model from the Explorer. Most formats open in the viewer straight away:
-
-- **Open in the viewer by default:** STEP, IGES, BREP, FCStd, STL, 3MF, GLB, 3DS, FBX, PLY, AMF.
-- **Opt-in:** OBJ, OFF, glTF, DAE, WRL, BIM. These are text formats, so the text editor stays the default. Right-click the tab and pick **Reopen Editor With… → 3D Model Viewer**.
-
-To make the viewer the default for a text format, add this to your settings:
+OBJ, OFF, glTF, DAE, WRL and BIM are text formats, so they still open in the text editor. Right-click the tab and pick **Reopen Editor With… → 3D Model Viewer**. To always open one in the viewer, add it to your settings:
 
 ```json
 "workbench.editorAssociations": { "*.obj": "o3dv.viewer.text" }
 ```
 
-**Mouse controls:** left-drag orbits, right-drag pans and the wheel zooms.
+## Move around
 
-**View cube.** The cube in the top-right corner turns with the model. Click a face, edge or corner to swing the camera to that view, such as FRONT, TOP or the front-right-top corner. **Fit**, just above it, frames the whole model.
+- **Mouse:** left-drag orbits, right-drag pans and the wheel zooms.
+- **View cube:** the cube in the top-right corner turns with the model. Click a face, edge or corner to jump to that view, such as FRONT, TOP or the front-right-top corner.
+- **Fit:** the button above the cube frames the whole model.
+- **Settings menu:** the gear in the top-left corner switches the up axis between Y and Z, turns on orthographic projection and draws feature edges.
 
-**Settings menu.** The gear in the top-left corner opens these toggles:
+## What else it does
 
-- **Up axis** switches between Y and Z. The starting axis comes from the `o3dv.upAxis` setting.
-- **Orthographic** switches from perspective to orthographic projection.
-- **Edges** draws feature edges on top of the shaded model.
-
-**Live reload.** When the file changes on disk, the model reloads and keeps your camera. If the file changes again mid-load, only the newest version is loaded.
-
-**STEP and other CAD formats.** STEP, IGES, BREP and FCStd go through a bundled WebAssembly build of Open CASCADE. The import runs in a background worker, so the UI stays responsive. A 17 MB STEP assembly takes a few seconds.
-
-**Companion files.** OBJ, glTF, 3DS, DAE, FBX and WRL can reference other files. The viewer loads `.mtl`, `.bin` and texture files from the same folder. Any it still can't find show in the status line at the bottom.
+- **Live reload.** When the file changes on disk, the model reloads and your camera stays put.
+- **CAD formats.** STEP, IGES, BREP and FCStd load through a bundled build of Open CASCADE, in the background. A 17 MB STEP assembly takes a few seconds.
+- **Materials and textures.** OBJ, glTF, 3DS, DAE, FBX and WRL pick up `.mtl`, `.bin` and texture files from the same folder. The status line at the bottom lists any that are missing.
 
 ## Settings
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `o3dv.upAxis` | `auto` | Up axis for new views. `auto` uses Z for STEP, IGES and BREP, which CAD tools export Z-up. Everything else uses Y, because the importer already turns Z-up mesh formats like STL and 3MF into Y-up. |
-| `o3dv.defaultView` | `front` | Side the camera starts on. `front` matches the CAD front view, looking from −Y for Z-up models. Use `back` if your models face +Y. |
+| `o3dv.upAxis` | `auto` | Up axis for new views. `auto` uses Z for STEP, IGES and BREP, which CAD tools export Z-up, and Y for everything else. |
+| `o3dv.defaultView` | `front` | Side the camera starts on. `front` matches the CAD front view. Use `back` if your models face +Y. |
 | `o3dv.showEdges` | `false` | Draws feature edges when a model opens. |
 | `o3dv.edgeThreshold` | `30` | Minimum angle between faces, in degrees, for an edge to be drawn. |
 
 ## Not supported yet
 
-3DM, IFC and Draco-compressed glTF. Online3DViewer loads the libraries for these from a CDN, and this extension doesn't bundle them yet.
+3DM, IFC and Draco-compressed glTF. Online3DViewer loads these from the internet, and this extension doesn't bundle them yet.
 
-## Development
+## Feedback
 
-```sh
-npm install
-npm run watch
-```
-
-Press F5 to launch an Extension Development Host with the extension loaded.
-
-- `src/extension.ts` registers the custom editors, reads model files and watches them for changes.
-- `src/webview/main.js` runs the Online3DViewer engine inside the webview.
-- `src/webview/occt.js` loads the bundled Open CASCADE build for STEP, IGES, BREP and FCStd. `esbuild.mjs` points the engine at it instead of the CDN.
-- `npm run package` type-checks, builds a production bundle and writes the `.vsix`.
-
-## Releasing
-
-Releases happen when a PR merges into `main`:
-
-```mermaid
-flowchart TD
-    A[PR merged into main] --> B{Is there a tag for the<br/>package.json version?}
-    B -- yes --> C[Nothing to release]
-    B -- no --> D[Build the .vsix]
-    D --> E[Publish to VS Code Marketplace]
-    E --> F[Publish to Open VSX]
-    F --> G[Create GitHub release v&lt;version&gt;]
-```
-
-To ship a change, bump `version` in `package.json` and add a matching `## <version>` section to `CHANGELOG.md` in the same PR. That section becomes the release notes. CI builds every PR and says whether merging it will publish.
-
-The workflow needs two repository secrets: `VSCE_PAT` (Azure DevOps token, Marketplace → Manage scope) and `OVSX_PAT` (Open VSX token). To release without a PR, run the **Release** workflow by hand from the Actions tab.
+Found a bug or missing a format? [Open an issue](https://github.com/nahueltaibo/vscode-3d-viewer/issues). To build it yourself, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
