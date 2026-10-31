@@ -117,12 +117,28 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
     font-family: var(--vscode-font-family); font-size: var(--vscode-font-size); }
   #viewer { position: absolute; inset: 0; }
   #viewer canvas { display: block; outline: none; }
-  #toolbar { position: absolute; top: 8px; left: 8px; display: flex; gap: 4px; z-index: 1; }
-  #toolbar button { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);
+  .tool { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);
     border: 1px solid var(--vscode-contrastBorder, transparent); border-radius: 2px; padding: 3px 8px; cursor: pointer;
-    font: inherit; }
-  #toolbar button:hover { background: var(--vscode-button-secondaryHoverBackground); }
-  #toolbar button[aria-pressed="true"] { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+    font: inherit; display: inline-flex; align-items: center; }
+  .tool:hover { background: var(--vscode-button-secondaryHoverBackground); }
+  #settings-area { position: absolute; top: 8px; left: 8px; z-index: 2; }
+  #settings { padding: 4px 6px; }
+  #settings-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 180px; padding: 4px 0;
+    background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+    color: var(--vscode-menu-foreground, var(--vscode-editor-foreground));
+    border: 1px solid var(--vscode-menu-border, var(--vscode-widget-border, transparent)); border-radius: 4px;
+    box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.36)); }
+  #settings-menu[hidden] { display: none; }
+  #settings-menu button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 4px 12px 4px 8px;
+    background: none; border: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  #settings-menu button:hover, #settings-menu button:focus-visible { outline: none;
+    background: var(--vscode-menu-selectionBackground, var(--vscode-list-hoverBackground));
+    color: var(--vscode-menu-selectionForeground, inherit); }
+  #settings-menu .check { width: 14px; visibility: hidden; }
+  #settings-menu [aria-checked="true"] .check { visibility: visible; }
+  #settings-menu .value { margin-left: auto; opacity: 0.8; }
+  #navigation { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; z-index: 1; }
   #status { position: absolute; bottom: 8px; left: 8px; right: 8px; opacity: 0.8; pointer-events: none; z-index: 1;
     white-space: pre-wrap; }
   #status.error { color: var(--vscode-errorForeground); opacity: 1; }
@@ -130,12 +146,22 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
 </head>
 <body data-occt-base="${occtBaseUri}">
 <div id="viewer"></div>
-<div id="toolbar">
-  <button id="fit" title="Fit model to view">Fit</button>
-  <button id="turn" title="Turn the view 180° around the up axis">Turn</button>
-  <button id="up" title="Toggle up axis">Y up</button>
-  <button id="edges" title="Toggle edges" aria-pressed="false">Edges</button>
-  <button id="proj" title="Toggle perspective / orthographic">Persp</button>
+<div id="settings-area">
+  <button id="settings" class="tool" title="Settings" aria-label="Settings" aria-haspopup="menu" aria-expanded="false">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true">
+      <circle cx="8" cy="8" r="6" stroke-width="2.6" stroke-dasharray="2.4 2.31"/>
+      <circle cx="8" cy="8" r="4.2" stroke-width="2.2"/>
+    </svg>
+  </button>
+  <div id="settings-menu" role="menu" hidden>
+    <button id="up" role="menuitem"><span class="check"></span>Up axis<span class="value">Y</span></button>
+    <button id="ortho" role="menuitemcheckbox" aria-checked="false"><span class="check">✓</span>Orthographic</button>
+    <button id="edges" role="menuitemcheckbox" aria-checked="false"><span class="check">✓</span>Edges</button>
+  </div>
+</div>
+<div id="navigation">
+  <button id="fit" class="tool" title="Fit model to view">Fit</button>
+  <canvas id="viewcube" title="Click a face, edge or corner to view the model from there"></canvas>
 </div>
 <div id="status">Loading…</div>
 <script nonce="${nonce}" src="${scriptUri}"></script>
