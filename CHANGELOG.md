@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Adds a view cube in the top-right corner. Click a face, edge or corner to view the model from there.
+- Moves Up axis, Orthographic and Edges into a settings menu behind the gear button.
+- Moves **Fit** above the view cube.
+- Removes the **Turn** button. The `o3dv.defaultView` setting still starts the view from the back.
+
 ## 0.3.0
 
 - Adds a **Turn** button that turns the view 180° around the up axis.

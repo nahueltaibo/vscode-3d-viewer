@@ -30,7 +30,7 @@ It's listed on the [VS Code Marketplace](https://marketplace.visualstudio.com/it
 2. Install it, either from a terminal:
 
    ```sh
-   code --install-extension o3dv-viewer-0.3.0.vsix
+   code --install-extension o3dv-viewer-0.4.0.vsix
    ```
 
    or in VS Code: open the Extensions view, click the `…` menu and pick **Install from VSIX…**.
@@ -43,7 +43,7 @@ git clone https://github.com/nahueltaibo/vscode-3d-viewer.git
 cd vscode-3d-viewer
 npm install
 npm run package
-code --install-extension o3dv-viewer-0.3.0.vsix
+code --install-extension o3dv-viewer-0.4.0.vsix
 ```
 
 ## Use it
