@@ -62,7 +62,7 @@ To make the viewer the default for a text format, add this to your settings:
 **Toolbar:**
 
 | Button | What it does |
-|---|---|
+| --- | --- |
 | Fit | Frames the whole model. |
 | Turn | Turns the view 180° around the up axis, to see the other side. |
 | Y up / Z up | Switches the up axis. The starting axis comes from the `o3dv.upAxis` setting. |
@@ -78,7 +78,7 @@ To make the viewer the default for a text format, add this to your settings:
 ## Settings
 
 | Setting | Default | What it does |
-|---|---|---|
+| --- | --- | --- |
 | `o3dv.upAxis` | `auto` | Up axis for new views. `auto` uses Z for STEP, IGES and BREP, which CAD tools export Z-up. Everything else uses Y, because the importer already turns Z-up mesh formats like STL and 3MF into Y-up. |
 | `o3dv.defaultView` | `front` | Side the camera starts on. `front` matches the CAD front view, looking from −Y for Z-up models. Use `back` if your models face +Y. |
 | `o3dv.showEdges` | `false` | Draws feature edges when a model opens. |
