@@ -1,0 +1,92 @@
+{
+  "name": "o3dv-viewer",
+  "displayName": "3D Model Viewer (Online3DViewer)",
+  "description": "View STL, 3MF, OBJ, glTF, PLY and other 3D models inside VS Code, powered by Online3DViewer.",
+  "version": "0.1.0",
+  "publisher": "nahueltaibo",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nahueltaibo/vscode-3d-viewer"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "o3dv.viewer",
+        "displayName": "3D Model Viewer",
+        "priority": "default",
+        "selector": [
+          { "filenamePattern": "*.{stl,STL}" },
+          { "filenamePattern": "*.{3mf,3MF}" },
+          { "filenamePattern": "*.{glb,GLB}" },
+          { "filenamePattern": "*.{3ds,3DS}" },
+          { "filenamePattern": "*.{fbx,FBX}" },
+          { "filenamePattern": "*.{ply,PLY}" },
+          { "filenamePattern": "*.{amf,AMF}" }
+        ]
+      },
+      {
+        "viewType": "o3dv.viewer.text",
+        "displayName": "3D Model Viewer",
+        "priority": "option",
+        "selector": [
+          { "filenamePattern": "*.{obj,OBJ}" },
+          { "filenamePattern": "*.{off,OFF}" },
+          { "filenamePattern": "*.{gltf,GLTF}" },
+          { "filenamePattern": "*.{dae,DAE}" },
+          { "filenamePattern": "*.{wrl,WRL}" },
+          { "filenamePattern": "*.{bim,BIM}" }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "3D Model Viewer",
+      "properties": {
+        "o3dv.upAxis": {
+          "type": "string",
+          "enum": ["Y", "Z"],
+          "default": "Y",
+          "description": "Up axis for new views. The importer already converts Z-up formats such as STL and 3MF to Y-up, so Y suits most files."
+        },
+        "o3dv.showEdges": {
+          "type": "boolean",
+          "default": false,
+          "description": "Draw feature edges on top of the shaded model."
+        },
+        "o3dv.edgeThreshold": {
+          "type": "number",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 180,
+          "description": "Minimum angle in degrees between faces for an edge to be drawn."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "npm run typecheck && vsce package --no-dependencies",
+    "vscode:prepublish": "node esbuild.mjs --production"
+  },
+  "dependencies": {
+    "online-3d-viewer": "^0.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
