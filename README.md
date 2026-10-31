@@ -14,7 +14,15 @@ Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Onlin
 
 ## Install
 
-**From a release.** This is the easiest way.
+**From the extension store.** This is the easiest way. Open the Extensions view, search for **3D Model Viewer (Online3DViewer)** and click **Install**. You can also install it from the command line:
+
+```sh
+code --install-extension nahueltaibo.o3dv-viewer
+```
+
+It's listed on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nahueltaibo.o3dv-viewer) and on [Open VSX](https://open-vsx.org/extension/nahueltaibo/o3dv-viewer) for VSCodium, Cursor and other VS Code forks.
+
+**From a release.** Use this when the store isn't available, such as on an offline machine.
 
 1. Download the latest `.vsix` from the [Releases page](https://github.com/nahueltaibo/vscode-3d-viewer/releases/latest).
 2. Install it, either from a terminal:
