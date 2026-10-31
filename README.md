@@ -1,6 +1,6 @@
 # 3D Model Viewer for VS Code
 
-Open 3D models in a VS Code tab instead of switching to a separate app. Keep the tab open while your CAD script rebuilds the file, and the view refreshes without losing your camera.
+Open STEP, STL, 3MF and other 3D models in a VS Code tab instead of switching to a separate app. Keep the tab open while your CAD script rebuilds the file, and the view refreshes without losing your camera.
 
 Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Online3DViewer). Everything runs offline inside VS Code.
 
@@ -20,7 +20,7 @@ Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Onlin
 2. Install it, either from a terminal:
 
    ```sh
-   code --install-extension o3dv-viewer-0.1.0.vsix
+   code --install-extension o3dv-viewer-0.2.0.vsix
    ```
 
    or in VS Code: open the Extensions view, click the `…` menu and pick **Install from VSIX…**.
@@ -33,14 +33,14 @@ git clone https://github.com/nahueltaibo/vscode-3d-viewer.git
 cd vscode-3d-viewer
 npm install
 npm run package
-code --install-extension o3dv-viewer-0.1.0.vsix
+code --install-extension o3dv-viewer-0.2.0.vsix
 ```
 
 ## Use it
 
-Open a model from the Explorer. Binary formats open in the viewer straight away:
+Open a model from the Explorer. Most formats open in the viewer straight away:
 
-- **Open in the viewer by default:** STL, 3MF, GLB, 3DS, FBX, PLY, AMF.
+- **Open in the viewer by default:** STEP, IGES, BREP, FCStd, STL, 3MF, GLB, 3DS, FBX, PLY, AMF.
 - **Opt-in:** OBJ, OFF, glTF, DAE, WRL, BIM. These are text formats, so the text editor stays the default. Right-click the tab and pick **Reopen Editor With… → 3D Model Viewer**.
 
 To make the viewer the default for a text format, add this to your settings:
@@ -56,11 +56,13 @@ To make the viewer the default for a text format, add this to your settings:
 | Button | What it does |
 |---|---|
 | Fit | Frames the whole model. |
-| Y up / Z up | Switches the up axis. Y suits most files, because the importer already turns Z-up formats like STL and 3MF into Y-up. |
+| Y up / Z up | Switches the up axis. The starting axis comes from the `o3dv.upAxis` setting. |
 | Edges | Draws feature edges on top of the shaded model. |
 | Persp / Ortho | Switches between perspective and orthographic projection. |
 
 **Live reload.** When the file changes on disk, the model reloads and keeps your camera. If the file changes again mid-load, only the newest version is loaded.
+
+**STEP and other CAD formats.** STEP, IGES, BREP and FCStd go through a bundled WebAssembly build of Open CASCADE. The import runs in a background worker, so the UI stays responsive. A 17 MB STEP assembly takes a few seconds.
 
 **Companion files.** OBJ, glTF, 3DS, DAE, FBX and WRL can reference other files. The viewer loads `.mtl`, `.bin` and texture files from the same folder. Any it still can't find show in the status line at the bottom.
 
@@ -68,13 +70,13 @@ To make the viewer the default for a text format, add this to your settings:
 
 | Setting | Default | What it does |
 |---|---|---|
-| `o3dv.upAxis` | `Y` | Up axis for new views. |
+| `o3dv.upAxis` | `auto` | Up axis for new views. `auto` uses Z for STEP, IGES and BREP, which CAD tools export Z-up. Everything else uses Y, because the importer already turns Z-up mesh formats like STL and 3MF into Y-up. |
 | `o3dv.showEdges` | `false` | Draws feature edges when a model opens. |
 | `o3dv.edgeThreshold` | `30` | Minimum angle between faces, in degrees, for an edge to be drawn. |
 
 ## Not supported yet
 
-STEP, IGES, BREP, FCStd, 3DM, IFC and Draco-compressed glTF. Online3DViewer loads the WASM libraries for these from a CDN, and this extension doesn't bundle them yet.
+3DM, IFC and Draco-compressed glTF. Online3DViewer loads the libraries for these from a CDN, and this extension doesn't bundle them yet.
 
 ## Development
 
@@ -87,8 +89,9 @@ Press F5 to launch an Extension Development Host with the extension loaded.
 
 - `src/extension.ts` registers the custom editors, reads model files and watches them for changes.
 - `src/webview/main.js` runs the Online3DViewer engine inside the webview.
+- `src/webview/occt.js` loads the bundled Open CASCADE build for STEP, IGES, BREP and FCStd. `esbuild.mjs` points the engine at it instead of the CDN.
 - `npm run package` type-checks, builds a production bundle and writes the `.vsix`.
 
 ## License
 
-MIT. The bundled third-party licenses are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT. The bundled Open CASCADE build is LGPL 2.1. All third-party licenses are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

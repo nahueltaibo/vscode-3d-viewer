@@ -10,6 +10,9 @@ import {
   ThreeModelLoader,
   Viewer,
 } from 'online-3d-viewer';
+import { createOcctWorker } from './occt.js';
+
+globalThis.o3dvCreateOcctWorker = () => createOcctWorker(document.body.dataset.occtBase);
 
 const vscode = acquireVsCodeApi();
 const container = document.getElementById('viewer');

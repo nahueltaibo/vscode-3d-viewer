@@ -6,6 +6,8 @@ const HAS_COMPANIONS = new Set(['.obj', '.gltf', '.3ds', '.dae', '.fbx', '.wrl']
 const COMPANION_EXTS = new Set([
   '.mtl', '.bin', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tga', '.tif', '.tiff', '.webp', '.dds',
 ]);
+// The engine loads these without rotation, and CAD tools write them Z-up.
+const Z_UP_EXTS = new Set(['.step', '.stp', '.iges', '.igs', '.brep', '.brp']);
 const COMPANION_BUDGET_BYTES = 256 * 1024 * 1024;
 const RELOAD_DEBOUNCE_MS = 300;
 
@@ -50,7 +52,7 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
           type: 'load',
           files,
           keepCamera,
-          upAxis: config.get<string>('upAxis', 'Y') === 'Z' ? 'Z' : 'Y',
+          upAxis: resolveUpAxis(config.get<string>('upAxis', 'auto'), uri),
           showEdges: config.get<boolean>('showEdges', false),
           edgeThreshold: config.get<number>('edgeThreshold', 30),
         });
@@ -90,14 +92,17 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
 
   private getHtml(webview: vscode.Webview, distUri: vscode.Uri): string {
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(distUri, 'webview.js'));
+    const occtBaseUri = webview.asWebviewUri(vscode.Uri.joinPath(distUri, 'occt')).toString() + '/';
     const nonce = makeNonce();
-    // Textures arrive as File objects and are shown through blob: URLs.
+    // Textures load through blob: URLs. STEP/IGES import runs occt-import-js in a blob: worker,
+    // which inherits this policy; its embind glue needs 'unsafe-eval' on top of WASM compilation.
     const csp = [
       `default-src 'none'`,
       `img-src ${webview.cspSource} blob: data:`,
       `style-src ${webview.cspSource} 'unsafe-inline'`,
-      `script-src 'nonce-${nonce}'`,
-      `connect-src blob: data:`,
+      `script-src 'nonce-${nonce}' 'wasm-unsafe-eval' 'unsafe-eval'`,
+      `worker-src blob:`,
+      `connect-src ${webview.cspSource} blob: data:`,
     ].join('; ');
     return `<!DOCTYPE html>
 <html lang="en">
@@ -122,7 +127,7 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
   #status.error { color: var(--vscode-errorForeground); opacity: 1; }
 </style>
 </head>
-<body>
+<body data-occt-base="${occtBaseUri}">
 <div id="viewer"></div>
 <div id="toolbar">
   <button id="fit" title="Fit model to view">Fit</button>
@@ -173,6 +178,13 @@ function isRelevantChange(modelUri: vscode.Uri, changed: vscode.Uri): boolean {
     return true;
   }
   return HAS_COMPANIONS.has(extOf(modelUri.path)) && COMPANION_EXTS.has(extOf(changed.path));
+}
+
+function resolveUpAxis(setting: string, uri: vscode.Uri): 'Y' | 'Z' {
+  if (setting === 'Y' || setting === 'Z') {
+    return setting;
+  }
+  return Z_UP_EXTS.has(extOf(uri.path)) ? 'Z' : 'Y';
 }
 
 function extOf(p: string): string {

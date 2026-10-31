@@ -1,6 +1,13 @@
 # Third-party notices
 
-dist/webview.js bundles the packages below.
+`dist/webview.js` bundles online-3d-viewer, three and fflate, all MIT-licensed.
+
+`dist/occt/` ships occt-import-js 0.0.22 unmodified, as separate files. It's a WebAssembly build of Open CASCADE Technology. Both are licensed under the GNU LGPL 2.1, and their full license texts sit next to the files:
+
+- `dist/occt/license.occt-import-js.txt`
+- `dist/occt/license.occt.txt`
+
+Source code: [occt-import-js](https://github.com/kovacsv/occt-import-js) and [Open CASCADE Technology](https://github.com/Open-Cascade-SAS/OCCT). To use a different build, replace the files in `dist/occt/`.
 
 ## online-3d-viewer 0.18.0
 

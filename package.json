@@ -1,8 +1,8 @@
 {
   "name": "o3dv-viewer",
   "displayName": "3D Model Viewer (Online3DViewer)",
-  "description": "View STL, 3MF, OBJ, glTF, PLY and other 3D models inside VS Code, powered by Online3DViewer.",
-  "version": "0.1.0",
+  "description": "View STEP, STL, 3MF, OBJ, glTF and other 3D models inside VS Code, powered by Online3DViewer.",
+  "version": "0.2.0",
   "publisher": "nahueltaibo",
   "license": "MIT",
   "private": true,
@@ -25,13 +25,27 @@
         "displayName": "3D Model Viewer",
         "priority": "default",
         "selector": [
-          { "filenamePattern": "*.{stl,STL}" },
-          { "filenamePattern": "*.{3mf,3MF}" },
-          { "filenamePattern": "*.{glb,GLB}" },
-          { "filenamePattern": "*.{3ds,3DS}" },
-          { "filenamePattern": "*.{fbx,FBX}" },
-          { "filenamePattern": "*.{ply,PLY}" },
-          { "filenamePattern": "*.{amf,AMF}" }
+          {
+            "filenamePattern": "*.{stl,STL}"
+          },
+          {
+            "filenamePattern": "*.{3mf,3MF}"
+          },
+          {
+            "filenamePattern": "*.{glb,GLB}"
+          },
+          {
+            "filenamePattern": "*.{3ds,3DS}"
+          },
+          {
+            "filenamePattern": "*.{fbx,FBX}"
+          },
+          {
+            "filenamePattern": "*.{ply,PLY}"
+          },
+          {
+            "filenamePattern": "*.{amf,AMF}"
+          }
         ]
       },
       {
@@ -39,12 +53,24 @@
         "displayName": "3D Model Viewer",
         "priority": "option",
         "selector": [
-          { "filenamePattern": "*.{obj,OBJ}" },
-          { "filenamePattern": "*.{off,OFF}" },
-          { "filenamePattern": "*.{gltf,GLTF}" },
-          { "filenamePattern": "*.{dae,DAE}" },
-          { "filenamePattern": "*.{wrl,WRL}" },
-          { "filenamePattern": "*.{bim,BIM}" }
+          {
+            "filenamePattern": "*.{obj,OBJ}"
+          },
+          {
+            "filenamePattern": "*.{off,OFF}"
+          },
+          {
+            "filenamePattern": "*.{gltf,GLTF}"
+          },
+          {
+            "filenamePattern": "*.{dae,DAE}"
+          },
+          {
+            "filenamePattern": "*.{wrl,WRL}"
+          },
+          {
+            "filenamePattern": "*.{bim,BIM}"
+          }
         ]
       }
     ],
@@ -53,9 +79,13 @@
       "properties": {
         "o3dv.upAxis": {
           "type": "string",
-          "enum": ["Y", "Z"],
-          "default": "Y",
-          "description": "Up axis for new views. The importer already converts Z-up formats such as STL and 3MF to Y-up, so Y suits most files."
+          "enum": [
+            "auto",
+            "Y",
+            "Z"
+          ],
+          "default": "auto",
+          "description": "Up axis for new views. 'auto' uses Z for STEP, IGES and BREP, which CAD tools export Z-up, and Y for everything else, because the importer already turns Z-up mesh formats such as STL and 3MF into Y-up."
         },
         "o3dv.showEdges": {
           "type": "boolean",
@@ -87,6 +117,7 @@
     "@types/vscode": "^1.90.0",
     "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.28.2",
+    "occt-import-js": "^0.0.22",
     "typescript": "^7.0.2"
   }
 }
