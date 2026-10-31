@@ -61,15 +61,13 @@ To make the viewer the default for a text format, add this to your settings:
 
 **Mouse controls:** left-drag orbits, right-drag pans and the wheel zooms.
 
-**Toolbar:**
+**View cube.** The cube in the top-right corner turns with the model. Click a face, edge or corner to swing the camera to that view, such as FRONT, TOP or the front-right-top corner. **Fit**, just above it, frames the whole model.
 
-| Button | What it does |
-| --- | --- |
-| Fit | Frames the whole model. |
-| Turn | Turns the view 180° around the up axis, to see the other side. |
-| Y up / Z up | Switches the up axis. The starting axis comes from the `o3dv.upAxis` setting. |
-| Edges | Draws feature edges on top of the shaded model. |
-| Persp / Ortho | Switches between perspective and orthographic projection. |
+**Settings menu.** The gear in the top-left corner opens these toggles:
+
+- **Up axis** switches between Y and Z. The starting axis comes from the `o3dv.upAxis` setting.
+- **Orthographic** switches from perspective to orthographic projection.
+- **Edges** draws feature edges on top of the shaded model.
 
 **Live reload.** When the file changes on disk, the model reloads and keeps your camera. If the file changes again mid-load, only the newest version is loaded.
 

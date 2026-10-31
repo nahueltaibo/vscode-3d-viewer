@@ -10,22 +10,38 @@ import {
   ThreeModelLoader,
   Viewer,
 } from 'online-3d-viewer';
+import * as THREE from 'three';
 import { createOcctWorker } from './occt.js';
+import { createViewCube } from './viewcube.js';
 
 globalThis.o3dvCreateOcctWorker = () => createOcctWorker(document.body.dataset.occtBase);
 
 const vscode = acquireVsCodeApi();
 const container = document.getElementById('viewer');
 const statusEl = document.getElementById('status');
-const upButton = document.getElementById('up');
-const edgesButton = document.getElementById('edges');
-const projButton = document.getElementById('proj');
+const settingsButton = document.getElementById('settings');
+const settingsMenu = document.getElementById('settings-menu');
+const upItem = document.getElementById('up');
+const orthoItem = document.getElementById('ortho');
+const edgesItem = document.getElementById('edges');
 
 const canvas = document.createElement('canvas');
 container.appendChild(canvas);
 const viewer = new Viewer();
 viewer.Init(canvas);
 const loader = new ThreeModelLoader();
+const viewCube = createViewCube(document.getElementById('viewcube'), viewFrom);
+
+// Viewer has no camera-change event, and every camera move ends in Render.
+const renderViewer = viewer.Render.bind(viewer);
+viewer.Render = () => {
+  renderViewer();
+  viewCube.render(viewer.GetCamera());
+};
+
+const VIEW_ANIMATION_MS = 300;
+// Fixed-up-vector orbiting breaks when the view looks exactly along the up axis.
+const POLE_TILT = 1e-3;
 
 const state = {
   upAxis: 'Y',
@@ -39,6 +55,14 @@ function resize() {
 }
 new ResizeObserver(resize).observe(container);
 resize();
+
+function toHex([r, g, b]) {
+  return '#' + [r, g, b].map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+}
+
+function mix(a, b, t) {
+  return a.map((c, i) => c + (b[i] - c) * t);
+}
 
 function cssColor(name, fallback) {
   const value = getComputedStyle(document.body).getPropertyValue(name).trim();
@@ -55,8 +79,16 @@ function isDarkTheme() {
 }
 
 function applyTheme() {
-  const [r, g, b] = cssColor('--vscode-editor-background', isDarkTheme() ? [30, 30, 30] : [255, 255, 255]);
-  viewer.SetBackgroundColor(new RGBAColor(r, g, b, 255));
+  const bg = cssColor('--vscode-editor-background', isDarkTheme() ? [30, 30, 30] : [255, 255, 255]);
+  const fg = cssColor('--vscode-editor-foreground', isDarkTheme() ? [212, 212, 212] : [51, 51, 51]);
+  viewer.SetBackgroundColor(new RGBAColor(bg[0], bg[1], bg[2], 255));
+  viewCube.setColors({
+    face: toHex(mix(bg, fg, 0.18)),
+    chamfer: toHex(mix(bg, fg, 0.1)),
+    line: toHex(mix(bg, fg, 0.45)),
+    text: toHex(fg),
+    hover: toHex(cssColor('--vscode-focusBorder', [0, 127, 212])),
+  });
   applyEdges();
 }
 // VS Code swaps body classes when the color theme changes.
@@ -65,13 +97,69 @@ new MutationObserver(applyTheme).observe(document.body, { attributes: true, attr
 function applyEdges() {
   const color = isDarkTheme() ? new RGBColor(0, 0, 0) : new RGBColor(40, 40, 40);
   viewer.SetEdgeSettings(new EdgeSettings(state.showEdges, color, state.edgeThreshold));
-  edgesButton.setAttribute('aria-pressed', String(state.showEdges));
+  edgesItem.setAttribute('aria-checked', String(state.showEdges));
 }
 
 function applyUpAxis(animate) {
   viewer.SetUpVector(state.upAxis === 'Y' ? Direction.Y : Direction.Z, animate);
-  upButton.textContent = `${state.upAxis} up`;
+  upItem.querySelector('.value').textContent = state.upAxis;
+  viewCube.setUpAxis(state.upAxis);
 }
+
+function worldUp() {
+  return state.upAxis === 'Y' ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(0, 0, 1);
+}
+
+function worldFront() {
+  return state.upAxis === 'Y' ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, -1, 0);
+}
+
+let viewAnimation = 0;
+
+// Swings the eye around the view center until it looks from dir, a unit vector in world space.
+function viewFrom(dir) {
+  const up = worldUp();
+  const target = dir.clone();
+  if (Math.abs(target.dot(up)) > 0.999) {
+    // Top and bottom views keep the front at the bottom and top of the screen.
+    target.addScaledVector(worldFront(), POLE_TILT).normalize();
+  }
+
+  const start = viewer.GetCamera().Clone();
+  const { eye, center } = start;
+  const offset = new THREE.Vector3(eye.x - center.x, eye.y - center.y, eye.z - center.z);
+  const distance = offset.length();
+  const from = offset.normalize();
+  const rotation =
+    from.dot(target) < -0.999
+      ? new THREE.Quaternion().setFromAxisAngle(up, Math.PI)
+      : new THREE.Quaternion().setFromUnitVectors(from, target);
+
+  const id = ++viewAnimation;
+  const t0 = performance.now();
+  const step = (now) => {
+    if (id !== viewAnimation) {
+      return;
+    }
+    const t = Math.min((now - t0) / VIEW_ANIMATION_MS, 1);
+    const eased = t * t * (3 - 2 * t);
+    const d = from.clone().applyQuaternion(new THREE.Quaternion().slerp(rotation, eased));
+    const camera = start.Clone();
+    camera.eye.x = center.x + d.x * distance;
+    camera.eye.y = center.y + d.y * distance;
+    camera.eye.z = center.z + d.z * distance;
+    camera.up.x = up.x;
+    camera.up.y = up.y;
+    camera.up.z = up.z;
+    viewer.SetCamera(camera);
+    if (t < 1) {
+      requestAnimationFrame(step);
+    }
+  };
+  requestAnimationFrame(step);
+}
+// Dragging the model takes over from a running view animation.
+canvas.addEventListener('pointerdown', () => viewAnimation++);
 
 // Rotates the eye 180° around the up axis through the view center.
 function turnAround() {
@@ -186,21 +274,37 @@ function load(msg) {
   });
 }
 
+function setMenuOpen(open) {
+  settingsMenu.hidden = !open;
+  settingsButton.setAttribute('aria-expanded', String(open));
+}
+
+settingsButton.addEventListener('click', () => setMenuOpen(settingsMenu.hidden));
+document.addEventListener('pointerdown', (ev) => {
+  if (!ev.target.closest('#settings, #settings-menu')) {
+    setMenuOpen(false);
+  }
+});
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') {
+    setMenuOpen(false);
+  }
+});
+
 document.getElementById('fit').addEventListener('click', () => fit(true));
-document.getElementById('turn').addEventListener('click', turnAround);
-upButton.addEventListener('click', () => {
+upItem.addEventListener('click', () => {
   state.upAxis = state.upAxis === 'Y' ? 'Z' : 'Y';
   applyUpAxis(true);
   fit(true);
 });
-edgesButton.addEventListener('click', () => {
+edgesItem.addEventListener('click', () => {
   state.showEdges = !state.showEdges;
   applyEdges();
 });
-projButton.addEventListener('click', () => {
+orthoItem.addEventListener('click', () => {
   const ortho = viewer.GetProjectionMode() === ProjectionMode.Perspective;
   viewer.SetProjectionMode(ortho ? ProjectionMode.Orthographic : ProjectionMode.Perspective);
-  projButton.textContent = ortho ? 'Ortho' : 'Persp';
+  orthoItem.setAttribute('aria-checked', String(ortho));
   viewer.Render();
 });
 
