@@ -1,0 +1,72 @@
+name: Release
+
+# Publishes when a merged PR carries a package.json version that has no v<version> tag yet.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Check version
+        id: version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already released. Bump the version in package.json to publish."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.version.outputs.release == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build package
+        if: steps.version.outputs.release == 'true'
+        run: |
+          npm ci
+          npm run package
+
+      # --skip-duplicate lets a rerun finish after a partial failure.
+      - name: Publish to VS Code Marketplace
+        if: steps.version.outputs.release == 'true'
+        run: npx vsce publish --packagePath "o3dv-viewer-${{ steps.version.outputs.version }}.vsix" --skip-duplicate
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX
+        if: steps.version.outputs.release == 'true'
+        run: npx ovsx publish "o3dv-viewer-${{ steps.version.outputs.version }}.vsix" --skip-duplicate
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      - name: Create GitHub release
+        if: steps.version.outputs.release == 'true'
+        run: |
+          version=${{ steps.version.outputs.version }}
+          awk -v v="$version" '$0 == "## " v {on=1; next} /^## / {on=0} on' CHANGELOG.md > notes.md
+          gh release create "v$version" "o3dv-viewer-$version.vsix" \
+            --title "v$version" --notes-file notes.md --target "$(git rev-parse HEAD)"
+        env:
+          GH_TOKEN: ${{ github.token }}

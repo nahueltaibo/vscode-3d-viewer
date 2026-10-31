@@ -102,6 +102,24 @@ Press F5 to launch an Extension Development Host with the extension loaded.
 - `src/webview/occt.js` loads the bundled Open CASCADE build for STEP, IGES, BREP and FCStd. `esbuild.mjs` points the engine at it instead of the CDN.
 - `npm run package` type-checks, builds a production bundle and writes the `.vsix`.
 
+## Releasing
+
+Releases happen when a PR merges into `main`:
+
+```mermaid
+flowchart TD
+    A[PR merged into main] --> B{Is there a tag for the<br/>package.json version?}
+    B -- yes --> C[Nothing to release]
+    B -- no --> D[Build the .vsix]
+    D --> E[Publish to VS Code Marketplace]
+    E --> F[Publish to Open VSX]
+    F --> G[Create GitHub release v&lt;version&gt;]
+```
+
+To ship a change, bump `version` in `package.json` and add a matching `## <version>` section to `CHANGELOG.md` in the same PR. That section becomes the release notes. CI builds every PR and says whether merging it will publish.
+
+The workflow needs two repository secrets: `VSCE_PAT` (Azure DevOps token, Marketplace → Manage scope) and `OVSX_PAT` (Open VSX token). To release without a PR, run the **Release** workflow by hand from the Actions tab.
+
 ## License
 
 MIT. The bundled Open CASCADE build is LGPL 2.1. All third-party licenses are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
