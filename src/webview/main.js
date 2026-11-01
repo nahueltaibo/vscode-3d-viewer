@@ -12,6 +12,7 @@ import {
 } from 'online-3d-viewer';
 import * as THREE from 'three';
 import { createOcctWorker } from './occt.js';
+import { createPartsPanel } from './parts.js';
 import { createViewCube } from './viewcube.js';
 
 globalThis.o3dvCreateOcctWorker = () => createOcctWorker(document.body.dataset.occtBase);
@@ -31,6 +32,18 @@ const viewer = new Viewer();
 viewer.Init(canvas);
 const loader = new ThreeModelLoader();
 const viewCube = createViewCube(document.getElementById('viewcube'), viewFrom);
+const parts = createPartsPanel({
+  viewer,
+  button: document.getElementById('parts'),
+  panel: document.getElementById('parts-panel'),
+  list: document.getElementById('parts-list'),
+  showAll: document.getElementById('show-all'),
+  highlightColor: () => {
+    const [r, g, b] = cssColor('--vscode-focusBorder', [0, 127, 212]);
+    return new RGBColor(r, g, b);
+  },
+  onOpenChange: (open) => vscode.setState({ ...vscode.getState(), partsOpen: open }),
+});
 
 // Viewer has no camera-change event, and every camera move ends in Render.
 const renderViewer = viewer.Render.bind(viewer);
@@ -175,10 +188,12 @@ function turnAround() {
   viewer.SetCamera(camera);
 }
 
+// Frames the visible parts, but clips against the whole model so hidden parts can come back.
 function fit(animate) {
-  const sphere = viewer.GetBoundingSphere(() => true);
+  const all = viewer.GetBoundingSphere(() => true);
+  const sphere = viewer.GetBoundingSphere(parts.isVisible) ?? all;
   if (sphere) {
-    viewer.AdjustClippingPlanesToSphere(sphere);
+    viewer.AdjustClippingPlanesToSphere(all);
     viewer.FitSphereToWindow(sphere, animate);
   }
 }
@@ -248,6 +263,7 @@ function load(msg) {
     onModelFinished: (importResult, threeObject) => {
       viewer.Clear();
       viewer.SetMainObject(threeObject);
+      parts.load(importResult.model, keptCamera !== null);
       if (keptCamera) {
         viewer.AdjustClippingPlanesToSphere(viewer.GetBoundingSphere(() => true));
         viewer.SetCamera(keptCamera);
@@ -318,4 +334,5 @@ window.addEventListener('message', (event) => {
 });
 
 applyTheme();
+parts.setOpen(Boolean(vscode.getState()?.partsOpen));
 vscode.postMessage({ type: 'ready' });

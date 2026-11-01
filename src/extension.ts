@@ -121,8 +121,33 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
     border: 1px solid var(--vscode-contrastBorder, transparent); border-radius: 2px; padding: 3px 8px; cursor: pointer;
     font: inherit; display: inline-flex; align-items: center; }
   .tool:hover { background: var(--vscode-button-secondaryHoverBackground); }
-  #settings-area { position: absolute; top: 8px; left: 8px; z-index: 2; }
-  #settings { padding: 4px 6px; }
+  #settings-area { position: absolute; top: 8px; left: 8px; z-index: 2; display: flex; gap: 4px; }
+  #settings, #parts { padding: 4px 6px; }
+  #parts[hidden] { display: none; }
+  #parts[aria-pressed="true"] { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+  #parts-panel { position: absolute; top: 40px; left: 8px; width: 260px; max-height: calc(100% - 80px); z-index: 1;
+    display: flex; flex-direction: column; border-radius: 4px;
+    background: var(--vscode-sideBar-background, var(--vscode-editorWidget-background));
+    border: 1px solid var(--vscode-widget-border, var(--vscode-contrastBorder, transparent));
+    box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.36)); }
+  #parts-panel[hidden] { display: none; }
+  #parts-panel header { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px;
+    font-weight: 600; border-bottom: 1px solid var(--vscode-widget-border, transparent); }
+  #parts-panel .link { background: none; border: none; padding: 0 2px; font: inherit; font-weight: normal; cursor: pointer;
+    color: var(--vscode-textLink-foreground); }
+  #parts-list, #parts-list ul { list-style: none; margin: 0; padding: 0; }
+  #parts-list { overflow: auto; padding: 2px 0; }
+  #parts-list ul[hidden] { display: none; }
+  .part { display: flex; align-items: center; gap: 4px; height: 22px; padding-right: 6px; white-space: nowrap; }
+  .part:hover { background: var(--vscode-list-hoverBackground); }
+  .part.selected { background: var(--vscode-list-inactiveSelectionBackground); }
+  .part.hidden-part .name { opacity: 0.5; }
+  .part input { margin: 0; }
+  .part .twisty { width: 12px; text-align: center; cursor: pointer; }
+  .part[data-expanded="true"] .twisty { transform: rotate(90deg); }
+  .part .name { flex: 1; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .part .isolate { visibility: hidden; }
+  .part:hover .isolate { visibility: visible; }
   #settings-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 180px; padding: 4px 0;
     background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
     color: var(--vscode-menu-foreground, var(--vscode-editor-foreground));
@@ -153,11 +178,22 @@ class ModelViewerProvider implements vscode.CustomReadonlyEditorProvider {
       <circle cx="8" cy="8" r="4.2" stroke-width="2.2"/>
     </svg>
   </button>
+  <button id="parts" class="tool" title="Parts" aria-label="Parts" aria-pressed="false" hidden>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <rect x="1" y="2.5" width="2.5" height="2.5"/><rect x="5" y="3" width="10" height="1.5"/>
+      <rect x="1" y="6.75" width="2.5" height="2.5"/><rect x="5" y="7.25" width="10" height="1.5"/>
+      <rect x="1" y="11" width="2.5" height="2.5"/><rect x="5" y="11.5" width="10" height="1.5"/>
+    </svg>
+  </button>
   <div id="settings-menu" role="menu" hidden>
     <button id="up" role="menuitem"><span class="check"></span>Up axis<span class="value">Y</span></button>
     <button id="ortho" role="menuitemcheckbox" aria-checked="false"><span class="check">✓</span>Orthographic</button>
     <button id="edges" role="menuitemcheckbox" aria-checked="false"><span class="check">✓</span>Edges</button>
   </div>
+</div>
+<div id="parts-panel" hidden>
+  <header>Parts<button id="show-all" class="link">Show all</button></header>
+  <ul id="parts-list"></ul>
 </div>
 <div id="navigation">
   <button id="fit" class="tool" title="Fit model to view">Fit</button>
