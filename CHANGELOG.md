@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Adds a parts panel for assemblies. Open it with the list button next to the gear.
+- Untick a part or group to hide it, or click **Isolate** to show only that part. **Show all** brings everything back.
+- Point at a row to highlight its part. Click a part in the view to find its row.
+- **Fit** frames only the visible parts.
+- Hidden parts stay hidden when the file reloads.
+
 ## 0.4.0
 
 - Adds a view cube in the top-right corner. Click a face, edge or corner to view the model from there.
