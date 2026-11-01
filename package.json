@@ -2,7 +2,7 @@
   "name": "o3dv-viewer",
   "displayName": "3D Model Viewer (Online3DViewer)",
   "description": "View STEP, STL, 3MF, OBJ, glTF and other 3D models inside VS Code, powered by Online3DViewer.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "nahueltaibo",
   "license": "MIT",
   "icon": "media/icon.png",
