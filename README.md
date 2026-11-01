@@ -6,7 +6,7 @@ Open STEP, STL, 3MF and other 3D models in a VS Code tab instead of switching to
 
 Everything runs offline inside VS Code. Rendering and import come from [Online3DViewer](https://github.com/kovacsv/Online3DViewer).
 
-![A 3MF assembly open in the viewer, with the view cube in the top-right corner](docs/screenshot.png)
+![A STEP assembly open in the viewer, with the parts panel on the left and the view cube in the top-right corner](docs/screenshot.png)
 
 ## Install
 
