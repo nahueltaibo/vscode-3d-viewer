@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+- Updates fflate to 0.8.3. Older versions could hang on a malformed ZIP64 archive, such as a damaged 3MF file.
+
 ## 0.5.0
 
 - Adds a parts panel for assemblies. Open it with the list button next to the gear.
