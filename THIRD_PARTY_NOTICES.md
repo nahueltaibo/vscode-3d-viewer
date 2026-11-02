@@ -61,7 +61,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-## fflate 0.8.2
+## fflate 0.8.3
 
 ```text
 MIT License
