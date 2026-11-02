@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const CHAMFER = 0.3;
 const A = 1 - CHAMFER;
-const SIZE_PX = 130;
+const SIZE_PX = 87;
 
 // CAD frame: Z up, front faces -Y. right and up orient each label as seen from outside the face.
 const FACES = [

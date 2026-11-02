@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2
+
+- Shrinks the view cube and its labels to two thirds of their size, so it covers less of the model.
+
 ## 0.5.1
 
 - Updates fflate to 0.8.3. Older versions could hang on a malformed ZIP64 archive, such as a damaged 3MF file.
