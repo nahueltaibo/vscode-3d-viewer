@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3
+
+- Changes the extension icon to a view cube, like the one in the viewer.
+
 ## 0.5.2
 
 - Shrinks the view cube and its labels to two thirds of their size, so it covers less of the model.
