@@ -21,6 +21,25 @@ function buildTree(model) {
         item.keys.add(`${child.GetId()}:${meshIndex}`);
       }
       visit(child, item, childPath, depth + 1);
+      // STEP assemblies come back with the leaf parts as several named meshes on one node: list each.
+      if (meshIndices.length > 1) {
+        const meshNames = new Map();
+        for (const meshIndex of meshIndices) {
+          const meshName = model.GetMesh(meshIndex).GetName() || 'Part';
+          const n = meshNames.get(meshName) ?? 0;
+          meshNames.set(meshName, n + 1);
+          const leaf = {
+            name: meshName,
+            path: `${childPath}/${meshName}#m${n}`,
+            depth: depth + 1,
+            parent: item,
+            children: [],
+            keys: new Set([`${child.GetId()}:${meshIndex}`]),
+          };
+          item.children.push(leaf);
+          items.push(leaf);
+        }
+      }
       for (const sub of item.children) {
         sub.keys.forEach((key) => item.keys.add(key));
       }
