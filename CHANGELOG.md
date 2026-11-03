@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.4
+
+- Lists each part of a STEP assembly in the parts panel, even when several parts share one node.
+
 ## 0.5.3
 
 - Changes the extension icon to a view cube, like the one in the viewer.
